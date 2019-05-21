@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.dao.IUserDao">
+    <!--
+        这个地方可以配置查询结果的列名和实体类的属性名的对应关系
+        resultMap的id属性随意写
+        type对应的实体类
+    -->
+    <!--    <resultMap id="userMap" type="com.itheima.domain.User">-->
+    <!--        &lt;!&ndash;主键字段的对应&ndash;&gt;-->
+    <!--        <id property="实体类属性" column="数据库主键字段名"></id>-->
+    <!--        &lt;!&ndash;其他字段的对应&ndash;&gt;-->
+    <!--        <result property="实体类属性" column="数据库主键字段名"></result>-->
+    <!--    </resultMap>-->
+
+
+    <!--
+        id:             对应接口的方法名
+        resultType:     结果集类型，如果是类，需要对应全限定名称（包名+类名）
+        resultMap:      对应上面注释的userMap
+        parameterType:  输入参数类型
+    -->
+
+    <!--****************select单表查询****************-->
+    <select id="findAll" resultType="com.itheima.domain.User">
+        <!--<select id="findAll" resultType="userMap">-->
+        select * from user
+    </select>
+
+    <select id="findOne" parameterType="Integer" resultType="com.itheima.domain.User">
+            select * from user where id=#{userId}
+        </select>
+
+    <select id="findAllByName" parameterType="String" resultType="com.itheima.domain.User">
+            select * from user where username like #{username}
+        </select>
+
+    <select id="findTotal" resultType="Integer">
+            select count(id) from user
+        </select>
+
+    <select id="findUserByVo" parameterType="com.itheima.domain.QueryVo" resultType="com.itheima.domain.User">
+        <!--
+            这里的user是QueryVo的属性
+            正常的，获取属性应用get方法，但此处可以.出来，是OGNL写法
+            将多个实体类包成一个对象，用于查询
+        -->
+        select * from user where username like #{user.username}
+    </select>
+
+    <select id="findUserCondition" parameterType="com.itheima.domain.User" resultType="com.itheima.domain.User">
+        select * from user where 1=1
+        <!--
+            动态查询，使用<if>
+        -->
+        <if test="username != null">
+            and username =#{username}
+        </if>
+        <if test="address != null">
+            and username like #{address}
+        </if>
+        <if test="sex != null">
+            and username =#{sex}
+        </if>
+        <if test="birthday != null">
+            and username =#{birthday}
+        </if>
+    </select>
+
+    <select id="findUserInIds" parameterType="com.itheima.domain.QueryVo" resultType="com.itheima.domain.User">
+        select * from user
+        <where>
+            <if test="ids != null and ids.size()>0">
+                <!--
+                    collection:     QueryVo.ids
+                    open:           where后起始语句
+                    close:          结束语句
+                    item:           foreach循环的每个元素
+                    separator:      用什么分割
+                -->
+                <foreach collection="ids" open=" and id in (" close=")" item="uid" separator=",">
+                    #{uid}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <!--****************select单表查询****************-->
+
+
+
+
+
+
+
+    <!--****************insert****************-->
+    <insert id="saveUser" parameterType="com.itheima.domain.User">
+        <!--配置插入操作后，获取插入数据的ID
+            keyProperty:    实体类
+            keyColumn:      数据库列名
+            resultType:     结果集类型
+            order:          什么时候执行
+        -->
+        <selectKey keyProperty="id" keyColumn="id" resultType="int" order="AFTER">
+            select last_insert_id();
+        </selectKey>
+        insert user (username,birthday,sex,address) values (#{username},#{birthday},#{sex},#{address})
+    </insert>
+
+    <!--****************update****************-->
+    <update id="updateUser" parameterType="com.itheima.domain.User">
+        update user set username=#{username},birthday=#{birthday},sex=#{sex},address=#{address} where id=#{id}
+    </update>
+
+    <!--****************delete****************-->
+    <delete id="deleteUser" parameterType="Integer">
+        delete from user where id=#{userId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.dao.IAccountDao">
+    <!--
+        这个地方可以配置查询结果的列名和实体类的属性名的对应关系
+        resultMap的id属性随意写
+        type对应的实体类
+
+        <resultMap id="userMap" type="com.itheima.domain.User">
+            <id property="实体类属性" column="数据库主键字段名"></id>
+            <result property="实体类属性" column="数据库其他字段名"></result>
+        </resultMap>
+
+        select u.*,a.id as aid,a.uid,a.money from account a,user u where u.id=a.uid
+    -->
+
+    <resultMap id="accountUserMap" type="com.itheima.domain.Account">
+        <!--这里封装了从表account的内容-->
+        <id property="id" column="aid"></id>
+        <result property="uid" column="uid"></result>
+        <result property="money" column="money"></result>
+        <!--
+            一对一的关系映射，配置封装user的内容
+            一对一的关系用到了 association标签，
+        -->
+        <!--通过account的uid字段关联，映射到account.user属性-->
+        <association property="user" column="uid" javaType="com.itheima.domain.User">
+            <id property="id" column="id"></id>
+            <result property="username" column="username"></result>
+            <result property="birthday" column="birthday"></result>
+            <result property="sex" column="sex"></result>
+            <result property="address" column="address"></result>
+        </association>
+    </resultMap>
+
+
+    <select id="findAll" resultType="com.itheima.domain.Account">
+        select * from account
+    </select>
+
+
+    <select id="findUserAcountAll" resultMap="accountUserMap">
+        select u.*,a.id as aid,a.uid,a.money from account a,user u where u.id=a.uid
+    </select>
+
+</mapper>
