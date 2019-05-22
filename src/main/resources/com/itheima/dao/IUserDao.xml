@@ -87,12 +87,35 @@
             </if>
         </where>
     </select>
+
+
+    <!--
+        一对多的配置  user一 account多
+    -->
+
+    <resultMap id="userAccountMap" type="com.itheima.domain.User">
+        <!--这里封装了主表user的内容-->
+        <id property="id" column="id"></id>
+        <result property="username" column="username"></result>
+        <result property="birthday" column="birthday"></result>
+        <result property="sex" column="sex"></result>
+        <result property="address" column="address"></result>
+        <!--配置user对象中accounts集合的映射
+            property：user中的集合名
+            ofType：该集合中元素的类型，需要些全名
+        -->
+        <collection property="accounts" ofType="com.itheima.domain.Account">
+            <id property="id" column="aid"></id>
+            <result property="uid" column="uid"></result>
+            <result property="money" column="money"></result>
+        </collection>
+    </resultMap>
+
+
+    <select id="findAllRelevanceAccount" resultMap="userAccountMap">
+        select u.*,a.id as aid,a.uid,a.money from user u left join account a on u.id=a.uid
+    </select>
     <!--****************select单表查询****************-->
-
-
-
-
-
 
 
     <!--****************insert****************-->

@@ -8,7 +8,7 @@ public class Account implements Serializable {
     private Double money;
 
     //---------------------------------------
-//    多对一
+//    一对一
 //    从表应该包含一个主表实体的引用
     private User user;
 

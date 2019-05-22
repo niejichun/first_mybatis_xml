@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.dao.IRoleDao">
+
+    <resultMap id="roleMap" type="com.itheima.domain.Role">
+        <id property="roleId" column="id"></id>
+        <result property="roleName" column="role_name"></result>
+        <result property="roleDesc" column="role_desc"></result>
+    </resultMap>
+    <select id="findAll" resultMap="roleMap">
+        select * from role
+    </select>
+</mapper>

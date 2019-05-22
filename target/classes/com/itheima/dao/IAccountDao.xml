@@ -26,7 +26,7 @@
             一对一的关系映射，配置封装user的内容
             一对一的关系用到了 association标签，
         -->
-        <!--通过account的uid字段关联，映射到account.user属性-->
+        <!--通过account的uid字段关联，映射到account.user属性,javaType必须写 user的实体类类-->
         <association property="user" column="uid" javaType="com.itheima.domain.User">
             <id property="id" column="id"></id>
             <result property="username" column="username"></result>

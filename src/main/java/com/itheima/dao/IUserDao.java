@@ -19,6 +19,9 @@ public interface IUserDao {
 
     List<User> findUserInIds(QueryVo vo);
 
+    //user 一对多 account
+    List<User> findAllRelevanceAccount();
+
     int findTotal();
 
     void saveUser(User user);

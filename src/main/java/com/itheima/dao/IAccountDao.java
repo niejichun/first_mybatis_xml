@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface IAccountDao {
     List<Account> findAll();
+
+//    一对一
     List<Account> findUserAcountAll();
 }

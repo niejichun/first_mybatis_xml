@@ -1,9 +1,11 @@
 package com.itheima.test;
 
 import com.itheima.dao.IAccountDao;
+import com.itheima.dao.IRoleDao;
 import com.itheima.dao.IUserDao;
 import com.itheima.domain.Account;
 import com.itheima.domain.QueryVo;
+import com.itheima.domain.Role;
 import com.itheima.domain.User;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -23,6 +25,7 @@ public class MybatisTest {
     private SqlSession sqlSession;
     private IUserDao userDao;
     private IAccountDao accountDao;
+    private IRoleDao roleDao;
 
     @Before
     public void init() throws Exception {
@@ -35,6 +38,7 @@ public class MybatisTest {
         //4 使用SqlSession创建Dao接口的代理对象    代理模式
         userDao = sqlSession.getMapper(IUserDao.class);
         accountDao = sqlSession.getMapper(IAccountDao.class);
+        roleDao = sqlSession.getMapper(IRoleDao.class);
     }
 
     @After
@@ -46,6 +50,8 @@ public class MybatisTest {
         in.close();
     }
 
+    //---------------------------select-----------------------------------------------------
+    //all
     @Test
     public void testFindAll() {
         List<User> users = userDao.findAll();
@@ -54,6 +60,7 @@ public class MybatisTest {
         }
     }
 
+    //one
     @Test
     public void testFindOne() {
         User user = userDao.findOne(2);
@@ -61,6 +68,7 @@ public class MybatisTest {
         System.out.println(user.getUsername());
     }
 
+    //by nameuser
     @Test
     public void testFindAllByNamne() {
         List<User> users = userDao.findAllByName("%王%");
@@ -69,12 +77,14 @@ public class MybatisTest {
         }
     }
 
+    //聚合
     @Test
     public void testFindTotal() {
         int count = userDao.findTotal();
         System.out.println(count);
     }
 
+    //很多参数
     @Test
     public void testFindAllByVo() {
         QueryVo vo = new QueryVo();
@@ -87,6 +97,7 @@ public class MybatisTest {
         }
     }
 
+    //很多参数
     @Test
     public void testFindCondition() {
         User user = new User();
@@ -97,6 +108,7 @@ public class MybatisTest {
         }
     }
 
+    //in
     @Test
     public void testFindUserInIds() {
         QueryVo vo = new QueryVo();
@@ -111,6 +123,45 @@ public class MybatisTest {
         }
     }
 
+
+    @Test
+    public void testAccountFindAll() {
+        List<Account> accounts = accountDao.findAll();
+        for (Account account : accounts) {
+            System.out.println(account);
+        }
+    }
+
+    //    一对一
+    @Test
+    public void testfindUserAcountAll() {
+        List<Account> accounts = accountDao.findUserAcountAll();
+        for (Account account : accounts) {
+            System.out.println(account);
+            System.out.println(account.getUser());
+        }
+    }
+
+    //    一对多
+    @Test
+    public void testFindAllRelevanceAccount() {
+        List<User> users = userDao.findAllRelevanceAccount();
+        for (User user : users) {
+            System.out.println(user);
+            System.out.println(user.getAccounts());
+        }
+    }
+
+    //      多对多
+    @Test
+    public void testFindAllRole() {
+        List<Role> roles = roleDao.findAll();
+        for (Role role : roles) {
+            System.out.println(role);
+        }
+    }
+
+    //--------------------------------------------------------------------------------
     @Test
     public void testSave() {
         User user = new User();
@@ -141,20 +192,4 @@ public class MybatisTest {
     }
 
 
-    @Test
-    public void testAccountFindAll() {
-        List<Account> accounts = accountDao.findAll();
-        for (Account account : accounts) {
-            System.out.println(account);
-        }
-    }
-
-    @Test
-    public void findUserAcountAll() {
-        List<Account> accounts = accountDao.findUserAcountAll();
-        for (Account account : accounts) {
-            System.out.println(account);
-            System.out.println(account.getUser());
-        }
-    }
 }
