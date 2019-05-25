@@ -5,82 +5,85 @@
 
 <mapper namespace="com.itheima.dao.IUserDao">
     <!--
-        这个地方可以配置查询结果的列名和实体类的属性名的对应关系
-        resultMap的id属性随意写
-        type对应的实体类
+        resultMap标签
+            配置sql查询结果与实体类的对用关系，使用场景：
+            1 实体类属性名与数据库字段不一致
+            2 表存在关联关系   一对一,一对多,多对一,多对多
+
+            collection标签
+                (一 resultMap) 关联 (多 collection)
+                (多 resultMap) 关联 (多 collection)
+                select:可实现懒加载
+
+            association标签
+                (一 resultMap) 关联 (一 association)
+                select:可实现懒加载
+
+            select标签
+                id:             对应接口的方法名
+                resultType:     结果集类型，如果是类，需要对应全限定名称（包名+类名）
+                resultMap:      对应resultMap标签的id属性
+                parameterType:  输入参数类型
+
+            <resultMap id="随意起名，习惯xxxMap" type="对用实体类全路径">
+                <id property="实体类属性" column="主键"></id>
+                <result property="实体类属性" column="其他字段"></result>
+
+                <collection property="resultMap.type关联的属性，通常是集合" ofType="集合中元素的类型，全路径">
+                    <id property="实体类属性" column="主键"></id>
+                    <result property="实体类属性" column="其他字段"></result>
+                </collection>
+
+                <association property="user" column="uid" javaType="com.itheima.domain.User">
+                </association>
+            </resultMap>
+
     -->
-    <!--    <resultMap id="userMap" type="com.itheima.domain.User">-->
-    <!--        &lt;!&ndash;主键字段的对应&ndash;&gt;-->
-    <!--        <id property="实体类属性" column="数据库主键字段名"></id>-->
-    <!--        &lt;!&ndash;其他字段的对应&ndash;&gt;-->
-    <!--        <result property="实体类属性" column="数据库主键字段名"></result>-->
-    <!--    </resultMap>-->
 
-
-    <!--
-        id:             对应接口的方法名
-        resultType:     结果集类型，如果是类，需要对应全限定名称（包名+类名）
-        resultMap:      对应上面注释的userMap
-        parameterType:  输入参数类型
-    -->
-
-    <!--****************select单表查询****************-->
+    <!--****************select****************-->
     <select id="findAll" resultType="com.itheima.domain.User">
-        <!--<select id="findAll" resultType="userMap">-->
         select * from user
     </select>
 
     <select id="findOne" parameterType="Integer" resultType="com.itheima.domain.User">
-            select * from user where id=#{userId}
-        </select>
+        select * from user where id=#{userId}
+    </select>
 
     <select id="findAllByName" parameterType="String" resultType="com.itheima.domain.User">
-            select * from user where username like #{username}
-        </select>
+        select * from user where username like #{username}
+     </select>
 
     <select id="findTotal" resultType="Integer">
-            select count(id) from user
-        </select>
+        select count(id) from user
+    </select>
 
+    <!--这里的user是QueryVo的属性，正常的，获取属性应用get方法，但此处可以.出来，是OGNL写法，将多个实体类包成一个对象，用于查询-->
     <select id="findUserByVo" parameterType="com.itheima.domain.QueryVo" resultType="com.itheima.domain.User">
-        <!--
-            这里的user是QueryVo的属性
-            正常的，获取属性应用get方法，但此处可以.出来，是OGNL写法
-            将多个实体类包成一个对象，用于查询
-        -->
         select * from user where username like #{user.username}
     </select>
 
+    <!--动态查询，使用<if>-->
     <select id="findUserCondition" parameterType="com.itheima.domain.User" resultType="com.itheima.domain.User">
         select * from user where 1=1
-        <!--
-            动态查询，使用<if>
-        -->
-        <if test="username != null">
-            and username =#{username}
-        </if>
-        <if test="address != null">
-            and username like #{address}
-        </if>
-        <if test="sex != null">
-            and username =#{sex}
-        </if>
-        <if test="birthday != null">
-            and username =#{birthday}
-        </if>
+        <if test="username != null">and username =#{username}</if>
+        <if test="address != null">and username like #{address}</if>
+        <if test="sex != null">and username =#{sex}</if>
+        <if test="birthday != null">and username =#{birthday}</if>
     </select>
 
+
+    <!--
+        select * from user where id in ()
+        collection:     QueryVo.ids
+        open:           where后起始语句
+        close:          结束语句
+        item:           foreach循环的每个元素
+        separator:      用什么分割
+    -->
     <select id="findUserInIds" parameterType="com.itheima.domain.QueryVo" resultType="com.itheima.domain.User">
         select * from user
         <where>
             <if test="ids != null and ids.size()>0">
-                <!--
-                    collection:     QueryVo.ids
-                    open:           where后起始语句
-                    close:          结束语句
-                    item:           foreach循环的每个元素
-                    separator:      用什么分割
-                -->
                 <foreach collection="ids" open=" and id in (" close=")" item="uid" separator=",">
                     #{uid}
                 </foreach>
@@ -89,18 +92,13 @@
     </select>
 
 
-    <!--一对多的配置  user一 account多 -->
+    <!-- 一user  关联 多account-->
     <resultMap id="userAccountMap" type="com.itheima.domain.User">
-        <!--这里封装了主表user的内容-->
         <id property="id" column="id"></id>
         <result property="username" column="username"></result>
         <result property="birthday" column="birthday"></result>
         <result property="sex" column="sex"></result>
         <result property="address" column="address"></result>
-        <!--配置user对象中accounts集合的映射
-            property：user中的集合名
-            ofType：该集合中元素的类型，需要些全名
-        -->
         <collection property="accounts" ofType="com.itheima.domain.Account">
             <id property="id" column="aid"></id>
             <result property="uid" column="uid"></result>
@@ -114,15 +112,13 @@
     </select>
 
 
-    <!--多对多的配置  user一 role多 -->
-
+    <!-- 多user 关联 多role-->
     <resultMap id="userRoleMap" type="com.itheima.domain.User">
         <id property="id" column="id"></id>
         <result property="username" column="username"></result>
         <result property="birthday" column="birthday"></result>
         <result property="sex" column="sex"></result>
         <result property="address" column="address"></result>
-
         <collection property="roles" ofType="com.itheima.domain.Role">
             <id property="roleId" column="rid"></id>
             <result property="roleName" column="role_name"></result>
@@ -135,7 +131,7 @@
         left join user_role ur on (u.id=ur.uid)
         left join role r on (ur.rid=r.id)
     </select>
-    <!--****************select单表查询****************-->
+    <!--****************select end****************-->
 
 
     <!--****************insert****************-->

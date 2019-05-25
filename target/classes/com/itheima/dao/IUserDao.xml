@@ -89,10 +89,7 @@
     </select>
 
 
-    <!--
-        一对多的配置  user一 account多
-    -->
-
+    <!--一对多的配置  user一 account多 -->
     <resultMap id="userAccountMap" type="com.itheima.domain.User">
         <!--这里封装了主表user的内容-->
         <id property="id" column="id"></id>
@@ -114,6 +111,29 @@
 
     <select id="findAllRelevanceAccount" resultMap="userAccountMap">
         select u.*,a.id as aid,a.uid,a.money from user u left join account a on u.id=a.uid
+    </select>
+
+
+    <!--多对多的配置  user一 role多 -->
+
+    <resultMap id="userRoleMap" type="com.itheima.domain.User">
+        <id property="id" column="id"></id>
+        <result property="username" column="username"></result>
+        <result property="birthday" column="birthday"></result>
+        <result property="sex" column="sex"></result>
+        <result property="address" column="address"></result>
+
+        <collection property="roles" ofType="com.itheima.domain.Role">
+            <id property="roleId" column="rid"></id>
+            <result property="roleName" column="role_name"></result>
+            <result property="roleDesc" column="role_desc"></result>
+        </collection>
+    </resultMap>
+
+    <select id="findAllUserRole" resultMap="userRoleMap">
+        select r.id as rid,r.role_name,r.role_desc,u.* from user u
+        left join user_role ur on (u.id=ur.uid)
+        left join role r on (ur.rid=r.id)
     </select>
     <!--****************select单表查询****************-->
 
