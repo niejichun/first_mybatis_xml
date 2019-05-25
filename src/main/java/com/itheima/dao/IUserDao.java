@@ -22,6 +22,9 @@ public interface IUserDao {
     //user 一对多 account
     List<User> findAllRelevanceAccount();
 
+    //user 多对多 role
+    List<User> findAllUserRole();
+
     int findTotal();
 
     void saveUser(User user);

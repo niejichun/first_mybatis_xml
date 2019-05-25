@@ -6,11 +6,21 @@
 <mapper namespace="com.itheima.dao.IRoleDao">
 
     <resultMap id="roleMap" type="com.itheima.domain.Role">
-        <id property="roleId" column="id"></id>
+        <id property="roleId" column="rid"></id>
         <result property="roleName" column="role_name"></result>
         <result property="roleDesc" column="role_desc"></result>
+
+        <collection property="users" ofType="com.itheima.domain.User">
+            <id property="id" column="id"></id>
+            <result property="username" column="username"></result>
+            <result property="birthday" column="birthday"></result>
+            <result property="sex" column="sex"></result>
+            <result property="address" column="address"></result>
+        </collection>
     </resultMap>
     <select id="findAll" resultMap="roleMap">
-        select * from role
+        select r.id as rid,r.role_name,r.role_desc,u.* from role r
+        left join user_role ur on (r.id=ur.rid)
+        left join user u on (ur.uid=u.id)
     </select>
 </mapper>

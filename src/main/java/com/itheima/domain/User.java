@@ -25,7 +25,19 @@ public class User implements Serializable {
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
-    //---------------------------------------
+//---------------------------------------
+//    多对多
+    private List<Role> roles;
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+//---------------------------------------
+
     public Integer getId() {
         return id;
     }

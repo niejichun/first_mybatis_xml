@@ -158,6 +158,16 @@ public class MybatisTest {
         List<Role> roles = roleDao.findAll();
         for (Role role : roles) {
             System.out.println(role);
+            System.out.println(role.getUsers());
+        }
+    }
+
+    @Test
+    public void findAllUserRole() {
+        List<User> users = userDao.findAllUserRole();
+        for (User user : users) {
+            System.out.println(user);
+            System.out.println(user.getRoles());
         }
     }
 
